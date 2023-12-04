@@ -1,4 +1,5 @@
 const express = require('express');
+const morgan = require('morgan')
 const fs = require('fs');
 
 const FILE_PATHS = {
@@ -6,26 +7,31 @@ const FILE_PATHS = {
 };
 
 const app = express();
+
+/**
+ * Middlewares
+ */
+app.use(morgan('dev'))
 app.use(express.json());
+/** -------- */
 
-app.use((req, res, next) => {
-  req.requestedAt = new Date().toISOString();
-
-  next();
-});
-
+/**
+ * Constants
+ */
 const PORT = 3000;
-
 const API_VERSION = 1;
-
 const ROUTS = {
   route: `/api/v${API_VERSION}`,
   tours: `/api/v${API_VERSION}/tours`,
   tour: `/api/v${API_VERSION}/tours/:id`,
 };
+/** -------- */
 
 const tours = JSON.parse(fs.readFileSync(FILE_PATHS.tours));
 
+/**
+ * Route handlers
+ */
 const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -137,9 +143,17 @@ const deleteTour = (req, res) => {
     });
   }
 };
+/** -------- */
 
+/**
+ * Routes
+ */
 app.route(ROUTS.tours).get(getAllTours).post(addTour);
-
 app.route(ROUTS.tour).get(getTour).patch(updateTour).delete(deleteTour);
+/** -------- */
 
+/**
+ * Start server
+ */
 app.listen(PORT, '127.0.0.1', () => console.log(`App running on port ${PORT}`));
+/** -------- */
