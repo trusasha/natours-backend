@@ -1,4 +1,8 @@
-const {PORT} = require('./src/constants');
-const app = require('./app');
+const dotenv = require("dotenv");
 
-app.listen(PORT, '127.0.0.1', () => console.log(`App running on port ${PORT}`));
+dotenv.config({ path: "./config.env" });
+
+const { PORT } = require("./src/constants");
+const app = require("./app");
+
+app.listen(PORT, "127.0.0.1", () => console.log(`App running on port ${PORT}`));

@@ -1,7 +1,7 @@
 const FILE_PATHS = {
   tours: `${__dirname}/../../dev-data/data/tours-simple.json`,
 };
-const PORT = 3000;
+const { PORT } = process.env;
 const API_VERSION = 1;
 const ROUTS = {
   route: `/api/v${API_VERSION}`,
@@ -11,4 +11,4 @@ const ROUTS = {
   user: `/api/v${API_VERSION}/users/:id`,
 };
 
-module.exports = {FILE_PATHS, PORT, API_VERSION, ROUTS};
+module.exports = { FILE_PATHS, PORT, API_VERSION, ROUTS };
