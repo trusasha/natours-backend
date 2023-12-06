@@ -3,6 +3,19 @@ const {FILE_PATHS} = require('../../constants');
 
 const tours = JSON.parse(fs.readFileSync(FILE_PATHS.tours));
 
+const checkId = (req, res, next, val) => {
+  const tour = tours.find(({id}) => id === val * 1);
+
+  if (!tour) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Invalid id',
+    });
+  }
+
+  next()
+}
+
 const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -16,13 +29,6 @@ const getAllTours = (req, res) => {
 const getTour = (req, res) => {
   const reqId = req.params?.id;
   const tour = tours.find(({id}) => id === reqId * 1);
-
-  if (!tour) {
-    return res.status(404).json({
-      status: 'error',
-      message: 'Invalid id',
-    });
-  }
 
   res.status(200).json({
     status: 'success',
@@ -53,10 +59,6 @@ const updateTour = (req, res) => {
     const reqId = req.params?.id;
     let newTour = null;
 
-    if (!reqId) {
-      throw new Error('Missed id');
-    }
-
     const newTours = tours.map((tour) => {
       if (tour.id === reqId * 1) {
         newTour = {
@@ -69,10 +71,6 @@ const updateTour = (req, res) => {
 
       return tour;
     });
-
-    if (!newTour) {
-      throw new Error('Invalid id');
-    }
 
     fs.writeFile(FILE_PATHS.tours, JSON.stringify(newTours), (error) => {
       res.status(201).json({
@@ -115,4 +113,4 @@ const deleteTour = (req, res) => {
   }
 };
 
-module.exports = {getAllTours, getTour, updateTour, deleteTour, addTour};
+module.exports = {getAllTours, getTour, updateTour, deleteTour, addTour, checkId};
