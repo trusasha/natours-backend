@@ -6,7 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx nodemon server.js",
-    "start-prod": "NODE_ENV=PROD npx nodemon server.js"
+    "start-prod": "NODE_ENV=PROD npx nodemon server.js",
+    "restore-tours": "node src/scripts/import-dev-data.js --import",
+    "delete-tours": "node src/scripts/import-dev-data.js --delete"
   },
   "author": "Me",
   "license": "ISC",
