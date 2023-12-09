@@ -7,9 +7,26 @@ const throwErrorMessage = (res, status, message) => {
   });
 };
 
+const filterQuery = (req, excludedFields) => {
+  const query = { ...req.query };
+
+  excludedFields.forEach((key) => delete query[key]);
+
+  return query;
+};
+
 const getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find();
+    const query = filterQuery(req, ["page", "sort", "limit", "fields"]);
+
+    const queryWithAttributes = JSON.parse(
+      JSON.stringify(query).replace(
+        /\b(gte|gt|lte|lt)\b/g,
+        (match) => `$${match}`,
+      ),
+    );
+
+    const tours = await Tour.find(queryWithAttributes);
 
     res.status(200).json({
       status: "success",
