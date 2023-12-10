@@ -1,6 +1,8 @@
 const Tour = require("../../models/tour");
 
 const throwErrorMessage = (res, status, message) => {
+  console.error("Error: ", message);
+
   res.status(status).json({
     status: "error",
     message,
@@ -29,9 +31,17 @@ const getAllTours = async (req, res) => {
     const request = Tour.find(queryWithAttributes);
 
     if (req.query.sort) {
-      request.sort(req.query.sort.replace(",", " "));
+      request.sort(req.query.sort.replaceAll(",", " "));
     } else {
       request.sort("-createdAt");
+    }
+
+    if (req.query.fields) {
+      const fields = req.query.fields.replaceAll(",", " ");
+
+      request.select(fields);
+    } else {
+      request.select("-__v");
     }
 
     const tours = await request;
