@@ -26,7 +26,15 @@ const getAllTours = async (req, res) => {
       ),
     );
 
-    const tours = await Tour.find(queryWithAttributes);
+    const request = Tour.find(queryWithAttributes);
+
+    if (req.query.sort) {
+      request.sort(req.query.sort.replace(",", " "));
+    } else {
+      request.sort("-createdAt");
+    }
+
+    const tours = await request;
 
     res.status(200).json({
       status: "success",
