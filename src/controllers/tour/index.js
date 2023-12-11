@@ -17,6 +17,14 @@ const filterQuery = (req, excludedFields) => {
   return query;
 };
 
+const aliasTopTours = async (req, res, next) => {
+  req.query.limit = "5";
+  req.query.sort = "-ratingAverage,price";
+  req.query.fields = "name,price,ratingAverage,summary,difficulty";
+
+  next();
+};
+
 const getAllTours = async (req, res) => {
   try {
     const query = filterQuery(req, ["page", "sort", "limit", "fields"]);
@@ -28,20 +36,34 @@ const getAllTours = async (req, res) => {
       ),
     );
 
-    const request = Tour.find(queryWithAttributes);
+    let request = Tour.find(queryWithAttributes);
 
     if (req.query.sort) {
-      request.sort(req.query.sort.replaceAll(",", " "));
+      request = request.sort(req.query.sort.replaceAll(",", " "));
     } else {
-      request.sort("-createdAt");
+      request = request.sort("-createdAt");
     }
 
     if (req.query.fields) {
       const fields = req.query.fields.replaceAll(",", " ");
 
-      request.select(fields);
+      request = request.select(fields);
     } else {
-      request.select("-__v");
+      request = request.select("-__v");
+    }
+
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+
+    request = request.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const numTours = await Tour.countDocuments();
+
+      if (skip >= numTours) {
+        throw new Error("This page is not exist");
+      }
     }
 
     const tours = await request;
@@ -120,6 +142,7 @@ const deleteTour = async (req, res) => {
 };
 
 module.exports = {
+  aliasTopTours,
   getAllTours,
   getTour,
   updateTour,
