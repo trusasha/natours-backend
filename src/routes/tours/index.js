@@ -7,11 +7,14 @@ const {
   addTour,
   deleteTour,
   aliasTopTours,
+  getTourStats,
 } = require("../../controllers/tour");
 
 const router = express.Router();
 
+router.route("/tour-stats").get(getTourStats);
 router.route("/top-5-tours").get(aliasTopTours, getAllTours);
+
 router.route("/").get(getAllTours).post(addTour);
 router.route("/:id").get(getTour).patch(updateTour).delete(deleteTour);
 
